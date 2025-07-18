@@ -5,7 +5,7 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 import asyncio
-
+from datetime import datetime
 
 # Mengakses API
 load_dotenv()
@@ -19,6 +19,8 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 response_salam = "🤩 Halo Master 🥰🤭, Saya siap membantu Master 🫡"
 response_tanya = "Masukkan pertanyaan Master setelah !tanya. Contoh: !tanya Apa itu DeepSeek?"
 response_sabar= "Oke Master, saya akan menunggu pertanyaan selanjutnya. Silakan bertanya kapan saja! 🥰🤭"
+today = datetime.now().strftime("%A, %d %B %Y")
+bertanya_dengan_nada_lembut = f'Master, Ada yang ingin ditanyakan lagi?'
 
 @bot.event
 async def on_ready():
@@ -40,33 +42,23 @@ async def on_message(message):
         else:
             print(f'[Owner]: {message.content.split("!tanya ",1)[1]}')
     
-    # Cek apakah pesan dimulai dengan "halo" atau "hai"
-    if (msg_content == "!tanya halo" or 
-        msg_content == "!tanya hai" or 
-        msg_content.startswith("halo") or 
-        msg_content.startswith('hai')):
-        # Kirim pesan balasan ke Discord
+    # Respon otomatis untuk salam dan kata kunci tertentu
+    if msg_content == ["!tanya halo", "!tanya hai"] or msg_content.startswith(("halo", "hai","p")):
         await message.channel.send(response_salam)
-        # Menampilkan balasan di terminal
         print(f'[Assistant]: {response_salam}')
-        return  # Tambahkan return di sini agar tidak memproses command dua kali
-    if (msg_content == "ada" or 
-        msg_content == "iya" or 
-        msg_content.startswith("oke")):
-        # Jika pesan dimulai dengan "ada" atau "saya", proses command
-        await message.channel.send(response_tanya )
-        # Menampilkan balasan di terminal
+        return
+    if msg_content == ["ada", "iya"] or msg_content.startswith("oke"):
+        await message.channel.send(response_tanya)
         print(f'[Assistant]: {response_tanya}')
         return
-    if (msg_content == "bentar ya" or 
-        msg_content == "ok wait" or 
-        msg_content.startswith("bentar") or 
-        msg_content.startswith('sebentar') or 
-        msg_content.startswith('oke')):
-        # Jika pesan dimulai dengan "bentarya" dan "ok", proses command
+
+    if msg_content == ["bentar ya", "ok wait"] or msg_content.startswith(("bentar", "sebentar", "oke")):
         await message.channel.send(response_sabar)
-        # Menampilkan balasan di terminal
         print(f'[Assistant]: {response_sabar}')
+        return
+    if msg_content == ["tanggal berapa hari ini", "hari ini tanggal berapa"] or msg_content.startswith(("tanggal", "hari ini","tgl")):
+        await message.channel.send(f'Hari ini tanggal {today} 🗓️, Apakah Master ada keperluan?')
+        print(f'[Assistant]: Hari ini tanggal {today} 🗓️, Apakah Master ada keperluan?')
         return
     await bot.process_commands(message)
     
@@ -96,17 +88,20 @@ async def tanya(ctx, *, pertanyaan: str):
         # Jika hasil lebih dari 2000 karakter, bagi menjadi beberapa pesan (batas Discord)
         if len(hasil) > 2000:
             msg = ""
-            bertanya_dengan_nada_lembut = f'Master, Ada yang ingin ditanyakan lagi?'
+            
             for i in range(0, len(hasil), 2000):
                 part = hasil[i:i+2000]
                 if i == 0:
                     msg = await ctx.send(part)  # Kirim bagian pertama
                 else:
                     msg = await msg.reply(part)  # Balas dengan bagian berikutnya
+                    await asyncio.sleep(5)  # Delay 5 detik
                     await ctx.send(bertanya_dengan_nada_lembut)  # Tanyakan jika ada yang ingin ditanyakan
                     print(bertanya_dengan_nada_lembut)
         else:
             await ctx.send(hasil)  # Kirim hasil jika kurang dari 2000 karakter
+            await asyncio.sleep(5)  # Delay 5 detik
+            await ctx.send(bertanya_dengan_nada_lembut)  # Tanyakan jika ada yang ingin ditanyakan
         # Tampilkan hasil di terminal
         print(f'[Assistant]: {hasil}')
     except Exception as e:
