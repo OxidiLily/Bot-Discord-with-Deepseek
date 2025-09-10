@@ -65,9 +65,6 @@ docker run --env-file .env bot-discord-deepseek
 
 Kontribusi sangat terbuka! Silakan buat issue atau pull request jika ingin menambah fitur atau memperbaiki bug.
 
-## Lisensi
-
-MIT License. Silakan gunakan dan modifikasi sesuai kebutuhan.
 
 ## Kontak
 
