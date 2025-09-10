@@ -68,7 +68,7 @@ Kontribusi sangat terbuka! Silakan buat issue atau pull request jika ingin menam
 
 ## Kontak
 
-Dibuat oleh [OxidiLily](https://github.com/OxidiLily).
+Dibuat oleh [OxidiLily](https://oxidilily.com/).
 
 ---
 
