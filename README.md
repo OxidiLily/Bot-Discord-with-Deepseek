@@ -1,24 +1,79 @@
+# Bot Discord with Deepseek
 
-# OxidiLily Assistant
+Bot Discord with Deepseek adalah sebuah proyek bot Discord berbasis Python yang memanfaatkan layanan Deepseek untuk berbagai fitur AI, seperti chat, image generation, dan lainnya. Bot ini dapat dijalankan secara lokal maupun menggunakan Docker, sehingga mudah untuk di-deploy di berbagai lingkungan.
 
-OxidiLily Assistant Bot adalah bot sederhana yang dirancang untuk memberikan jawaban cepat berbasis DeepSeek AI langsung di server Discord.
+## Fitur
 
-🔹 Fitur Utama:
+- Integrasi dengan Deepseek API untuk chat dan image generation (jika tersedia)
+- Mudah dikonfigurasi melalui environment variable
+- Dapat dijalankan secara langsung (`python`) maupun melalui Docker
+- Pengelolaan perintah bot Discord yang modular
 
-Hanya menerima pesan teks dari pengguna untuk diproses oleh DeepSeek AI.
-Tidak mendukung atau menyimpan gambar, audio, video, atau media lainnya.
-Tidak memiliki database; seluruh percakapan tidak tersimpan setelah selesai diproses. Jika jawaban tidak sesuai dan ingin melanjutkan percakapan sebelumnya maka harus diulang dengan memberikan topik yang lebih detail
+## Instalasi
 
-🔹 Cara Menggunakan:
-Cukup ketik perintah di server Discord tempat bot sudah diundang:
+### 1. Clone Repository
 
-!tanya <pertanyaan> → Bot akan menjawab pertanyaan Anda.
+```bash
+git clone https://github.com/OxidiLily/Bot-Discord-with-Deepseek.git
+cd Bot-Discord-with-Deepseek
+```
 
-Contoh: !tanya docker adalah
+### 2. Instalasi Dependensi
 
-Contoh: !tanya cara install nginx di ubuntu
+Pastikan Python 3.9+ dan pip sudah terpasang.
 
-Bot ini cocok digunakan sebagai asisten QnA ringan untuk membantu komunitas secara langsung di Discord.
+```bash
+pip install -r requirements.txt
+```
 
-# Tentang Bot
-bot.oxidilily.com
+### 3. Konfigurasi Environment
+
+Buat file `.env` dan isi dengan konfigurasi berikut:
+
+```
+DISCORD_TOKEN=token_bot_discord_anda
+DEEPSEEK_API_KEY=api_key_deepseek_anda
+```
+
+### 4. Jalankan Bot
+
+```bash
+python main.py
+```
+
+### 5. Jalankan dengan Docker (Opsional)
+
+Jika ingin menjalankan dengan Docker:
+
+```bash
+docker build -t bot-discord-deepseek .
+docker run --env-file .env bot-discord-deepseek
+```
+
+## Struktur Direktori
+
+```
+.
+├── main.py
+├── requirements.txt
+├── Dockerfile
+├── .env.example
+└── ... (modul dan file pendukung lainnya)
+```
+
+## Kontribusi
+
+Kontribusi sangat terbuka! Silakan buat issue atau pull request jika ingin menambah fitur atau memperbaiki bug.
+
+## Lisensi
+
+MIT License. Silakan gunakan dan modifikasi sesuai kebutuhan.
+
+## Kontak
+
+Dibuat oleh [OxidiLily](https://github.com/OxidiLily).
+
+---
+
+> **Catatan:**  
+> Pastikan untuk menjaga keamanan token dan API key Anda. Jangan membagikan file `.env` ke publik.
