@@ -1,6 +1,6 @@
 # Bot Discord with Deepseek
 
-Bot Discord with Deepseek adalah sebuah proyek bot Discord berbasis Python yang memanfaatkan layanan Deepseek untuk berbagai fitur AI, seperti chat, image generation, dan lainnya. Bot ini dapat dijalankan secara lokal maupun menggunakan Docker, sehingga mudah untuk di-deploy di berbagai lingkungan.
+Bot Discord with Deepseek adalah sebuah proyek bot Discord berbasis Python yang memanfaatkan layanan Deepseek untuk berbagai fitur AI, seperti chat. Bot ini dapat dijalankan secara lokal maupun menggunakan Docker, sehingga mudah untuk di-deploy di berbagai lingkungan.
 
 ## Fitur
 
