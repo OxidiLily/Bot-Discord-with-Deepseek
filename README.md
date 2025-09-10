@@ -20,3 +20,5 @@ Contoh: !tanya cara install nginx di ubuntu
 
 Bot ini cocok digunakan sebagai asisten QnA ringan untuk membantu komunitas secara langsung di Discord.
 
+# Tentang Bot
+bot.oxidilily.com
