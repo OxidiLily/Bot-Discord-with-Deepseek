@@ -109,8 +109,14 @@ async def tanya(ctx, *, pertanyaan: str):
         await ctx.send(f'Terjadi kesalahan saat memproses permintaan 😖😵‍💫😵 ')
         print(f'Error: {str(e)}')
 
+<<<<<<< Updated upstream
     #print(response.choices[0].message.content)
 
 # Jalankan bot
 bot.run(BotDiscord)
 
+=======
+
+if __name__ == "__main__":
+    bot.run(BotDiscord)
+>>>>>>> Stashed changes
