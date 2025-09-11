@@ -135,7 +135,5 @@ async def tanya(ctx, *, pertanyaan: str):
         await ctx.send(f'Terjadi kesalahan saat memproses permintaan 😖😵‍💫😵 ')
         print(f'Error: {str(e)}')
 
-# ...existing code...
-
 if __name__ == "__main__":
     bot.run(BotDiscord)
