@@ -1,22 +1,19 @@
 # install OpenAI SDK : `pip3 install openai`
 import discord
 from discord.ext import commands
-from openai import OpenAI
+from message import pesan
+from response import tanya, cuaca
 import os
-from dotenv import load_dotenv
-import asyncio
-from datetime import datetime
 import re
-# Mengakses API
-load_dotenv()
-BotDiscord  = os.getenv('BotToken')
-client = OpenAI(api_key=os.getenv('API'), base_url="https://api.deepseek.com")
+from datetime import datetime
 
 # Konfigurasi bot Discord
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents) 
-
+BotDiscord  = os.getenv('BotToken')
+today = datetime.now().strftime("%d %B %Y")
+logs = re.compile(r"^(?!.*!).+", re.IGNORECASE) # logs yang tidak sesuai dengan perintah !
 
 @bot.event
 async def on_ready():
@@ -24,117 +21,66 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    msg_content = message.content.lower()
     # Menghindari loop tak terbatas
     if message.author == bot.user:
         return
     # Pisahkan antara pesan dari oxidilily dan OxidiLily Assistant#9815
-    if str(message.author) == "OxidiLily Assistant#9815":
-        print(f'[Assistant]: {message.content}')
+    if str(message.author) == "OxidiLily Assistant#5343":
+        print(f'{today} [Assistant]: {message.content}')
     else :
-        # Jika pesan dimulai dengan "!tanya", pisahkan pertanyaan
-        if "!tanya " not in message.content:
-            print(f'[Owner]: {message.content}')
+        if logs.match(message.content):  # kalau tidak ada tanda seru di awal
+            print(f'{today} [{message.author}]: {message.content}')
         else:
-            print(f'[Owner]: {message.content.split("!tanya ",1)[1]}')
-    
-    # Daftar pola regex untuk mendeteksi salam dan kata kunci tertentu
-    unrelated = re.compile(r"^(?!.*!tanya).+", re.IGNORECASE)
-    salam_pattern = re.compile(r"^!tanya\s*(halo|hai)$|^(halo|hai|p)\b", re.IGNORECASE)
-    tanya_pattern = re.compile(r"^(ada|iya)$|^oke\b", re.IGNORECASE)
-    sabar_pattern = re.compile(r"^(bentar ya|ok wait)$|^(bentar|sebentar|oke)\b", re.IGNORECASE)
-    tanggal_pattern = re.compile(r"^(tanggal berapa hari ini|hari ini tanggal berapa| !tanya hari ini tanggal| !tanya dino iki)$|^(tanggal|hari ini|tgl)\b", re.IGNORECASE)
+            # Misalnya kalau mau hapus prefix "!" pakai regex
+            tanpa_prefix = re.sub(r"^!", "", message.content, count=1)
+            print(f'{today} [{message.author}]: {tanpa_prefix}')
 
-    # Respon bot untuk setiap pola
-    response_salam = f"🤩 Halo Master {message.author} 🥰🤭, Saya siap membantu Master 🫡"
-    response_tanya = f"Masukkan pertanyaan Master {message.author}, saya akan berusaha menjawabnya dengan sebaik mungkin. 🥰🤭"
-    response_sabar= f"Oke Master {message.author}, saya akan menunggu pertanyaan selanjutnya. Silakan bertanya kapan saja! 🥰🤭"
-    today = datetime.now().strftime("%A, %d %B %Y")
-    
-    # Respon otomatis untuk salam dan kata kunci tertentu menggunakan regex
-    if salam_pattern.match(msg_content):
+    # Proses pesan menggunakan fungsi dari message.py
+    response = pesan(message)
+    if response:
         async with message.channel.typing():
-            await message.channel.send(response_salam)
-        print(f'[Assistant]: {response_salam}')
+            #await message.channel.send(response)
+            if isinstance(response, discord.Embed):
+                await message.channel.send(embed=response)
+                print(f'{today} [Assistant]: {response.title}')
+            else:
+                await message.channel.send(response)
+                print(f'{today} [Assistant]: {response}')   
         return
-    if tanya_pattern.match(msg_content):
-        async with message.channel.typing():
-            await message.channel.send(response_tanya)
-        print(f'[Assistant]: {response_tanya}')
-        return
-    if sabar_pattern.match(msg_content):
-        async with message.channel.typing():
-            await message.channel.send(response_sabar)
-        print(f'[Assistant]: {response_sabar}')
-        return
-    if tanggal_pattern.match(msg_content):
-        async with message.channel.typing():
-            await message.channel.send(f'Hari ini tanggal {today} 🗓️, Apakah Master {message.author} ada keperluan?')
-        print(f'[Assistant]: Hari ini tanggal {today} 🗓️, Apakah Master ada keperluan?')
-        return
-    if unrelated.match(msg_content):
-        async with message.channel.typing():
-            await message.channel.send(f'Halo Master {message.author}, untuk menggunakan fitur tanya jawab, silakan ketik perintah dengan format:\n\n !tanya [pertanyaan yang ingin ditanyakan oleh {message.author}].\n\n Contohnya: !tanya Apa itu DeepSeek?\n\n Dengan format ini, sistem akan memahami pertanyaan {message.author} dan memberikan jawaban yang sesuai.')
-        print(f'Halo Master {message.author}, untuk menggunakan fitur tanya jawab, silakan ketik perintah dengan format: !tanya [pertanyaan yang ingin ditanyakan oleh {message.author}]. Contohnya: !tanya Apa itu DeepSeek? Dengan format ini, sistem akan memahami pertanyaan {message.author} dan memberikan jawaban yang sesuai.')
-        return
-
     await bot.process_commands(message)
     
     
-@bot.command(name="tanya")
-async def tanya(ctx, *, pertanyaan: str):
-    """Perintah untuk bertanya kepada DeepSeek."""
-    try:
-        async with ctx.typing():  # Bot mengetik saat menunggu jawaban AI
-            # Mengambil event loop yang sedang berjalan
-            loop = asyncio.get_running_loop()
-            # Menjalankan permintaan ke API DeepSeek di thread executor agar tidak blocking
-            response = await loop.run_in_executor(
-                None,
-                lambda: client.chat.completions.create(
-                    model="deepseek-chat",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant"},
-                        {"role": "user", "content": pertanyaan},
-                    ],
-                    stream=False
-                )
-            )
-        # Pesan penutup dengan nada lembut
-        bertanya_dengan_nada_lembut = f'Master {ctx.author}, Ada yang ingin ditanyakan lagi?'
-        # Mengambil hasil jawaban dari response API
-        hasil = response.choices[0].message.content
-        async with ctx.typing():  # Menunjukkan bot sedang mengetik saat memproses hasil
-            if len(hasil) > 2000:
-                msg = None
-                for i in range(0, len(hasil), 2000):
-                    part = hasil[i:i+2000]
-                    if i == 0:
-                        await ctx.typing()
-                        await asyncio.sleep(2) # Simulasi delay mengetik
-                        msg = await ctx.send(part)
-                    else:
-                        await ctx.typing()
-                        await asyncio.sleep(2) # Simulasi delay mengetik
-                        msg = await msg.reply(part)
-                await ctx.typing()
-                await asyncio.sleep(2) # Simulasi delay mengetik
-                await ctx.send(bertanya_dengan_nada_lembut)
-                print(bertanya_dengan_nada_lembut)
-            else:
-                await ctx.typing()
-                await asyncio.sleep(2) # Simulasi delay mengetik
-                await ctx.send(hasil)
-                await ctx.typing()
-                await asyncio.sleep(2) # Simulasi delay mengetik
-                await ctx.send(bertanya_dengan_nada_lembut)
-        print(f'[Assistant]: {hasil}')
-    except Exception as e:
-        async with ctx.typing():
-            await asyncio.sleep(1)
-        await ctx.send(f'Terjadi kesalahan saat memproses permintaan 😖😵‍💫😵 ')
-        print(f'Error: {str(e)}')
+@bot.command(name="tanya", aliases=["t"])
+async def handle_tanya(ctx, *, pertanyaan: str=None):
+    if pertanyaan is None:
+        response_tanya_tidak_sesuai = discord.Embed(
+            title="❗ Format Pertanyaan Tidak Sesuai ❗",
+            description=f"""Master {ctx.author}, tolong masukkan perintah:
+            !t [sebutkan pertanyaannya] yaa...😊🙏""",
+            color=discord.Color.red()
+        )
+        await ctx.send(embed=response_tanya_tidak_sesuai)
+        print(f"{today} [Assistant]: {response_tanya_tidak_sesuai.title}")
+        return
+    
+    await tanya(ctx, tanya=pertanyaan)
 
+@bot.command(name="cuaca", aliases=["c"])
+async def handle_cuaca(ctx, *, pertanyaan: str=None):
+    if pertanyaan is None:
+        response_cuaca_tidak_sesuai = discord.Embed(
+            title="❗ Format Pertanyaan Tidak Sesuai ❗",
+            description=f"""Master {ctx.author.mention}, tolong masukkan perintah:
+            !c [sebutkan nama daerahnya] yaa...😊🙏""",
+            color=discord.Color.red()
+        )
+
+        await ctx.send(embed=response_cuaca_tidak_sesuai)
+        print(f"{today} [Assistant]: {response_cuaca_tidak_sesuai.title}")
+        return
+
+    # Kalau ada input lokasi, panggil fungsi utama
+    await cuaca(ctx, cuaca=pertanyaan)
 
 if __name__ == "__main__":
     bot.run(BotDiscord)
