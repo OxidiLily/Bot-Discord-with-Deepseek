@@ -12,21 +12,27 @@ def pesan(message):
     help_pattern = re.compile(r"^help|-h", re.IGNORECASE) # Pola untuk mendeteksi perintah bantuan
     date_pattern = re.compile(r"date|-tgl", re.IGNORECASE)
     
-    # Respon bot untuk setiap pola
+    # Respon bot untuk setiap pola dengan Embed
     response_tidaksesuai = discord.Embed(
-        title="❗ Format Pertanyaan Tidak Sesuai ❗",
-        description=f"""Maaf master {message.author.mention}, format pertanyaan tidak sesuai.
+        title="❗ Format Perintah Tidak Sesuai ❗",
+        description=f"""
+        Maaf master {message.author.mention}, format pertanyaan tidak sesuai.
+        
         Silahkan gunakan format berikut untuk melihat bantuan:
 
-        help | -h : Untuk menampilkan bantuan 🆘""",
+        **help | -h : Untuk menampilkan bantuan** 🆘""",
+        
         color=discord.Color.red()
     )
-
+    # Embed untuk tanggal
     response_tanggal = discord.Embed(
         title=f"📅 Informasi Tanggal",
         description=f"""
         Hari ini adalah : 
-        {today} 🗓️, \n\n Apakah Master {message.author.mention} ada keperluan?""",
+        
+        **{today}** 🗓️,
+        
+        Apakah Master {message.author.mention} ada keperluan?""",
         color=discord.Color.green()
     )
     
@@ -37,10 +43,10 @@ def pesan(message):
             Halo Master {message.author.mention}, gunakan format berikut:
 
             **!tanya [pertanyaan]**  atau **!t [pertanyaan]**
-            Contoh: `!tanya Apa itu AI?`
+            Contoh: `!tanya Apa itu AI?` atau `!t Apa itu AI?`
 
             **!cuaca [nama daerah]**  atau **!c [nama daerah]**
-            Contoh: `!cuaca Jakarta`
+            Contoh: `!cuaca Jakarta` atau `!c Jakarta`
 
             **date** atau **-tgl**  
             Untuk menanyakan tanggal hari ini 🗓️
@@ -65,19 +71,22 @@ async def response_message(hasil, ctx):
     # Pesan penutup response dari bot
     bertanya_dengan_nada_lembut = discord.Embed(
         title=" 🤖 Konfirmasi Jawaban 🤖",
-        description=f"""Master {ctx.author.mention}, Apakah jawaban sudah sesuai?
-        Jika belum sesuai, silakan Master {ctx.author.mention} dapat tanyakan lagi dengan pertanyaan yang mendetail yaa...😊🙏""",
+        description=f"""
+        Master {ctx.author.mention}, Apakah jawaban sudah sesuai?
+        Jika belum sesuai, silakan Master {ctx.author.mention} dapat tanyakan ulang dengan pertanyaan yang lebih mendetail yaa...😊🙏""",
         color=discord.Color.purple()
     )
     
     # Cek panjang hasil jawaban, jika lebih dari 2000 karakter, bagi menjadi beberapa pesan
     if len(hasil) > 2000:
+            parts = split_message(hasil)
             msg = None
-            for i in range(0, len(hasil), 2000):
-                part = hasil[i:i+2000]
-                if i == 0:
-                    await ctx.typing()
-                    await asyncio.sleep(2) # Simulasi delay mengetik
+            for part in parts:
+                # part = hasil[i:i+2000]
+                # if i == 0:
+                await ctx.typing()
+                await asyncio.sleep(2) # Simulasi delay mengetik
+                if msg is None:
                     msg = await ctx.send(f'\n{part}' )
                 else:
                     await ctx.typing()
@@ -85,15 +94,25 @@ async def response_message(hasil, ctx):
                     msg = await msg.reply(f'\n{part}' )
             await ctx.typing()
             await asyncio.sleep(2) # Simulasi delay mengetik
-            await ctx.send(bertanya_dengan_nada_lembut)
+            await ctx.channel.send(embed=bertanya_dengan_nada_lembut)
     else:
         await ctx.typing()
         await asyncio.sleep(2) # Simulasi delay mengetik
         await ctx.send(hasil)
         await ctx.typing()
         await asyncio.sleep(2) # Simulasi delay mengetik
-        await ctx.send(f'\n{bertanya_dengan_nada_lembut}')
+        await ctx.channel.send(embed=bertanya_dengan_nada_lembut)
     #await asyncio.sleep(2)
     print(f'{today} [Assistant]: {hasil}')
 
     
+def split_message(text, limit=2000):
+    parts = []
+    while len(text) > limit:
+        split_pos = text.rfind("\n", 0, limit)  # cari newline sebelum limit
+        if split_pos == -1:
+            split_pos = limit
+        parts.append(text[:split_pos])
+        text = text[split_pos:].lstrip()
+    parts.append(text)
+    return parts

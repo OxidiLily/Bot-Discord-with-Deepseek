@@ -24,7 +24,7 @@ async def on_message(message):
     # Menghindari loop tak terbatas
     if message.author == bot.user:
         return
-    # Pisahkan antara pesan dari oxidilily dan OxidiLily Assistant#9815
+    # Pisahkan antara pesan dari oxidilily dan OxidiLily Assistant#5343
     if str(message.author) == "OxidiLily Assistant#5343":
         print(f'{today} [Assistant]: {message.content}')
     else :
@@ -33,13 +33,19 @@ async def on_message(message):
         else:
             # Misalnya kalau mau hapus prefix "!" pakai regex
             tanpa_prefix = re.sub(r"^!", "", message.content, count=1)
-            print(f'{today} [{message.author}]: {tanpa_prefix}')
+            # mapping singkatan ke kata lengkap
+            mapping = {
+                "c": "cuaca",
+                "t": "tanya"
+            }
+            # ganti kalau ada di mapping
+            logs_prefix = mapping.get( tanpa_prefix,tanpa_prefix)
+            print(f'{today} [{message.author}]: {logs_prefix}')
 
     # Proses pesan menggunakan fungsi dari message.py
     response = pesan(message)
     if response:
         async with message.channel.typing():
-            #await message.channel.send(response)
             if isinstance(response, discord.Embed):
                 await message.channel.send(embed=response)
                 print(f'{today} [Assistant]: {response.title}')
@@ -55,11 +61,19 @@ async def handle_tanya(ctx, *, pertanyaan: str=None):
     if pertanyaan is None:
         response_tanya_tidak_sesuai = discord.Embed(
             title="❗ Format Pertanyaan Tidak Sesuai ❗",
-            description=f"""Master {ctx.author}, tolong masukkan perintah:
-            !t [sebutkan pertanyaannya] yaa...😊🙏""",
+            description=f"""
+            Master {ctx.author}, tolong masukkan perintah:
+
+            **`!t [sebutkan pertanyaannya]`** atau **`!tanya [sebutkan pertanyaannya]`**
+            
+            Contoh: **`!t DeepSeek itu apa?`** atau **`!tanya DeepSeek itu apa?`**
+            
+            mohon sesuai perintahnya yaa...😊🙏
+            
+            """,
             color=discord.Color.red()
         )
-        await ctx.send(embed=response_tanya_tidak_sesuai)
+        await ctx.channel.send(embed=response_tanya_tidak_sesuai)
         print(f"{today} [Assistant]: {response_tanya_tidak_sesuai.title}")
         return
     
@@ -69,13 +83,21 @@ async def handle_tanya(ctx, *, pertanyaan: str=None):
 async def handle_cuaca(ctx, *, pertanyaan: str=None):
     if pertanyaan is None:
         response_cuaca_tidak_sesuai = discord.Embed(
-            title="❗ Format Pertanyaan Tidak Sesuai ❗",
-            description=f"""Master {ctx.author.mention}, tolong masukkan perintah:
-            !c [sebutkan nama daerahnya] yaa...😊🙏""",
+            title="❗ Format Cuaca Tidak Sesuai ❗",
+            description=f"""
+            Master {ctx.author.mention}, tolong masukkan perintah:
+
+            **`!c [sebutkan nama daerahnya]`** atau **`!cuaca [sebutkan nama daerahnya]`**
+            
+            Contoh: **`!c Jakarta`** atau **`!cuaca Jakarta`**
+            
+            mohon sesuai perintahnya yaa...😊🙏
+            
+            """,
             color=discord.Color.red()
         )
 
-        await ctx.send(embed=response_cuaca_tidak_sesuai)
+        await ctx.channel.send(embed=response_cuaca_tidak_sesuai)
         print(f"{today} [Assistant]: {response_cuaca_tidak_sesuai.title}")
         return
 
