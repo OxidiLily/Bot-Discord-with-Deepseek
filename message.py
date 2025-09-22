@@ -20,7 +20,7 @@ def pesan(message):
         
         Silahkan gunakan format berikut untuk melihat bantuan:
 
-        **help | -h : Untuk menampilkan bantuan** 🆘""",
+        `help` | `-h` : Untuk menampilkan bantuan 🆘""",
         
         color=discord.Color.red()
     )
@@ -30,7 +30,7 @@ def pesan(message):
         description=f"""
         Hari ini adalah : 
         
-        **{today}** 🗓️,
+        {today} 🗓️,
         
         Apakah Master {message.author.mention} ada keperluan?""",
         color=discord.Color.green()
@@ -42,16 +42,16 @@ def pesan(message):
         description=f"""
             Halo Master {message.author.mention}, berikut ini format yang dapat digunakan pada bot ini:
 
-            **!tanya [pertanyaan]**  atau **!t [pertanyaan]**
+            `!tanya [pertanyaan]`  atau `!t [pertanyaan]`
             Contoh: `!tanya Apa itu AI?` atau `!t Apa itu AI?`
 
-            **!cuaca [nama daerah]**  atau **!c [nama daerah]**
+            `!cuaca [nama daerah]`  atau `!c [nama daerah]`
             Contoh: `!cuaca Jakarta` atau `!c Jakarta`
 
-            **date** atau **-tgl**  
+            `date` atau `-tgl`  
             Untuk menanyakan tanggal hari ini 🗓️
 
-            **help | -h**
+            `help` | `-h`
             Untuk menampilkan bantuan 🆘
             """,
         color=discord.Color.blue()

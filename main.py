@@ -33,14 +33,21 @@ async def on_message(message):
         else:
             # Misalnya kalau mau hapus prefix "!" pakai regex
             tanpa_prefix = re.sub(r"^!", "", message.content, count=1)
+            # Pecah input jadi [command, argumen...]
+            parts = tanpa_prefix.split(maxsplit=1)
             # mapping singkatan ke kata lengkap
             mapping = {
                 "c": "cuaca",
-                "t": "tanya"
+                "t": "tanya",
             }
+            # Ambil logs_prefix dan argumen
+            logs_prefix= parts[0].lower()
+            argumen = parts[1] if len(parts) > 1 else ""
             # ganti kalau ada di mapping
-            logs_prefix = mapping.get( tanpa_prefix,tanpa_prefix)
-            print(f'{today} [{message.author}]: {logs_prefix}')
+            logs_prefix = mapping.get( logs_prefix, logs_prefix)
+            # Gabungkan lagi command + argumen
+            final_logs = f"{logs_prefix} {argumen}".strip()
+            print(f'{today} [{message.author}]: {final_logs}')
 
     # Proses pesan menggunakan fungsi dari message.py
     response = pesan(message)
