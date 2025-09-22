@@ -16,7 +16,7 @@ def pesan(message):
     response_tidaksesuai = discord.Embed(
         title="❗ Format Perintah Tidak Sesuai ❗",
         description=f"""
-        Maaf master {message.author.mention}, format pertanyaan tidak sesuai.
+        Maaf master {message.author.mention}, format yang digunakan tidak sesuai.
         
         Silahkan gunakan format berikut untuk melihat bantuan:
 
@@ -40,7 +40,7 @@ def pesan(message):
     response_help = discord.Embed(
         title="📖 Bantuan Perintah",
         description=f"""
-            Halo Master {message.author.mention}, gunakan format berikut:
+            Halo Master {message.author.mention}, berikut ini format yang dapat digunakan pada bot ini:
 
             **!tanya [pertanyaan]**  atau **!t [pertanyaan]**
             Contoh: `!tanya Apa itu AI?` atau `!t Apa itu AI?`
@@ -50,6 +50,9 @@ def pesan(message):
 
             **date** atau **-tgl**  
             Untuk menanyakan tanggal hari ini 🗓️
+
+            **help | -h**
+            Untuk menampilkan bantuan 🆘
             """,
         color=discord.Color.blue()
     )
@@ -63,7 +66,7 @@ def pesan(message):
     elif unrelated.match(msg_content):
         return response_tidaksesuai
     
-    return None  # kalau cocok dengan !tanya, biarkan diproses lebih lanjut
+    return None  # kalau cocok dengan unrelated, biarkan diproses lebih lanjut
     
 
 async def response_message(hasil, ctx):
