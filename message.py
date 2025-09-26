@@ -1,15 +1,14 @@
-from datetime import datetime
 import re
 import asyncio
 import discord
+from date import tanggal
 
 def pesan(message):
     msg_content = message.content.lower()
-    today = datetime.now().strftime("%A, %d %B %Y")
+    today = tanggal
 
     # Daftar pola regex untuk mendeteksi salam dan kata kunci tertentu
-    unrelated = re.compile(r"^(?!.*!tanya|!t|!cuaca|!c).+", re.IGNORECASE) # Pesan yang tidak sesuai dengan perintah !tanya atau !cuaca
-    help_pattern = re.compile(r"^help|-h", re.IGNORECASE) # Pola untuk mendeteksi perintah bantuan
+    unrelated = re.compile(r"^(?!.*!tanya|!t|!cuaca|!c|!w|!help|-h).+", re.IGNORECASE) # Pesan yang tidak sesuai dengan perintah !tanya atau !cuaca
     date_pattern = re.compile(r"date|-tgl", re.IGNORECASE)
     
     # Respon bot untuk setiap pola dengan Embed
@@ -20,7 +19,7 @@ def pesan(message):
         
         Silahkan gunakan format berikut untuk melihat bantuan:
 
-        `help` | `-h` : Untuk menampilkan bantuan 🆘""",
+        `!help` | `-h` : Untuk menampilkan bantuan 🆘""",
         
         color=discord.Color.red()
     )
@@ -59,9 +58,7 @@ def pesan(message):
 
     
     # Respon otomatis untuk salam dan kata kunci tertentu menggunakan regex
-    if help_pattern.match(msg_content):
-        return response_help
-    elif date_pattern.search(msg_content):
+    if date_pattern.search(msg_content):
         return response_tanggal
     elif unrelated.match(msg_content):
         return response_tidaksesuai
@@ -70,7 +67,7 @@ def pesan(message):
     
 
 async def response_message(hasil, ctx):
-    today = datetime.now().strftime("%d %B %Y")
+    today = tanggal
     # Pesan penutup response dari bot
     bertanya_dengan_nada_lembut = discord.Embed(
         title=" 🤖 Konfirmasi Jawaban 🤖",
@@ -87,24 +84,23 @@ async def response_message(hasil, ctx):
             for part in parts:
                 # part = hasil[i:i+2000]
                 # if i == 0:
-                await ctx.typing()
-                await asyncio.sleep(2) # Simulasi delay mengetik
-                if msg is None:
-                    msg = await ctx.send(f'\n{part}' )
-                else:
-                    await ctx.typing()
+                async with ctx.typing():
                     await asyncio.sleep(2) # Simulasi delay mengetik
-                    msg = await msg.reply(f'\n{part}' )
-            await ctx.typing()
-            await asyncio.sleep(2) # Simulasi delay mengetik
-            await ctx.channel.send(embed=bertanya_dengan_nada_lembut)
+                    if msg is None:
+                        msg = await ctx.send(f'\n{part}' )
+                    else:
+                        await ctx.typing()
+                        await asyncio.sleep(2) # Simulasi delay mengetik
+                        msg = await msg.reply(f'\n{part}' )
+            async with ctx.typing():
+                await asyncio.sleep(2) # Simulasi delay mengetik
+                await ctx.channel.send(embed=bertanya_dengan_nada_lembut) 
     else:
         await ctx.typing()
-        await asyncio.sleep(2) # Simulasi delay mengetik
-        await ctx.send(hasil)
-        await ctx.typing()
-        await asyncio.sleep(2) # Simulasi delay mengetik
-        await ctx.channel.send(embed=bertanya_dengan_nada_lembut)
+        async with ctx.typing():
+            await ctx.send(hasil)
+            await asyncio.sleep(2) # Simulasi delay mengetik
+            await ctx.channel.send(embed=bertanya_dengan_nada_lembut)
     #await asyncio.sleep(2)
     print(f'{today} [Assistant]: {hasil}')
 
