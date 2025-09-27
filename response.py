@@ -271,10 +271,11 @@ async def cuaca(ctx, *, daerah: str):
             # Kirim hasil dalam format yang sudah ada
             async with ctx.typing():
                 await asyncio.sleep(2) # Simulasi delay mengetik
-                await ctx.send(f"**Prakiraan Cuaca untuk {wilayah} berdasarkan data dari BMKG:**\n\n{hasil}")
+                await response_message(hasil, ctx)
                 print(f'{tanggal} [Assistant]: Cuaca berhasil dikirim untuk {wilayah}')
             
         except Exception as e:
-            await ctx.send("Gagal mengambil data cuaca dari BMKG 😵")
-            print(f'Error in cuaca function: {str(e)}')
-            print(f'{tanggal} [Assistant]: Gagal mengambil data cuaca dari BMKG 😵')
+            async with ctx.typing():
+                await ctx.send("Gagal mengambil data cuaca dari BMKG 😵")
+                print(f'Error in cuaca function: {str(e)}')
+                print(f'{tanggal} [Assistant]: Gagal mengambil data cuaca dari BMKG 😵')

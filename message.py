@@ -8,7 +8,7 @@ def pesan(message):
     today = tanggal
 
     # Daftar pola regex untuk mendeteksi salam dan kata kunci tertentu
-    unrelated = re.compile(r"^(?!.*!tanya|!t|!cuaca|!c|!w|!help|-h).+", re.IGNORECASE) # Pesan yang tidak sesuai dengan perintah !tanya atau !cuaca
+    unrelated = re.compile(r"^(?!.*!tanya|!t|!cuaca|!c|!w|!help|!h).+", re.IGNORECASE) # Pesan yang tidak sesuai dengan perintah !tanya atau !cuaca
     date_pattern = re.compile(r"date|-tgl", re.IGNORECASE)
     
     # Respon bot untuk setiap pola dengan Embed
@@ -19,7 +19,7 @@ def pesan(message):
         
         Silahkan gunakan format berikut untuk melihat bantuan:
 
-        `!help` | `-h` : Untuk menampilkan bantuan 🆘""",
+        `!help` | `!h` : Untuk menampilkan bantuan 🆘""",
         
         color=discord.Color.red()
     )
@@ -33,27 +33,6 @@ def pesan(message):
         
         Apakah Master {message.author.mention} ada keperluan?""",
         color=discord.Color.green()
-    )
-    
-    # Embed untuk help
-    response_help = discord.Embed(
-        title="📖 Bantuan Perintah",
-        description=f"""
-            Halo Master {message.author.mention}, berikut ini format yang dapat digunakan pada bot ini:
-
-            `!tanya [pertanyaan]`  atau `!t [pertanyaan]`
-            Contoh: `!tanya Apa itu AI?` atau `!t Apa itu AI?`
-
-            `!cuaca [nama daerah]`  atau `!c [nama daerah]`
-            Contoh: `!cuaca Jakarta` atau `!c Jakarta`
-
-            `date` atau `-tgl`  
-            Untuk menanyakan tanggal hari ini 🗓️
-
-            `help` | `-h`
-            Untuk menampilkan bantuan 🆘
-            """,
-        color=discord.Color.blue()
     )
 
     

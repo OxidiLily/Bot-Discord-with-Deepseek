@@ -194,7 +194,7 @@ async def handle_wilayah(ctx, *, nama: str=None):
         
         await ctx.send(embed=embed)
 
-@bot.command(name="help")
+@bot.command(name="help", aliases=["h"])
 async def help_command(ctx):
     """Command help yang diperbaiki"""
     embed = discord.Embed(

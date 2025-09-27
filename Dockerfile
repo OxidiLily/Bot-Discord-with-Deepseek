@@ -9,4 +9,4 @@ RUN pip install --no-cache-dir discord.py openai python-dotenv
 
 COPY . .
 
-CMD ["python", "main.py"]
+CMD ["python", "-u", "main.py"]
