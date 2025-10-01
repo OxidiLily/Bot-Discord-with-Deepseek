@@ -47,6 +47,7 @@ async def on_message(message):
                 "c": "cuaca",
                 "t": "tanya",
                 "w": "wilayah",  # Tambahan untuk pencarian wilayah
+                "h": "help"
             }
             # Ambil logs_prefix dan argumen
             logs_prefix= parts[0].lower()
@@ -230,6 +231,7 @@ async def help_command(ctx):
     embed.set_footer(text="Gunakan perintah sesuai format untuk hasil terbaik!")
     
     await ctx.send(embed=embed)
+    print(f"{today} [Assistant]: {embed.title}")
 
 if __name__ == "__main__":
     bot.run(BotDiscord)
