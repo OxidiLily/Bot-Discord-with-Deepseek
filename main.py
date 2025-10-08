@@ -7,8 +7,56 @@ import os
 import re
 from dotenv import load_dotenv
 from date import tanggal
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
+import json
+from datetime import datetime
 
-# Konfigurasi bot Discord
+# ============================================
+# HEALTH CHECK SERVER (UNTUK UPTIME KUMA)
+# ============================================
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/health' or self.path == '/':
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            
+            response = {
+                "status": "ok",
+                "service": "discord-bot",
+                "timestamp": datetime.now().isoformat(),
+                "bot_name": "OxidiLily Assistant"
+            }
+            self.wfile.write(json.dumps(response).encode())
+        else:
+            self.send_response(404)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            error = {"status": "error", "message": "Not Found"}
+            self.wfile.write(json.dumps(error).encode())
+    
+    def log_message(self, format, *args):
+        # Suppress default HTTP logging (agar log tidak berantakan)
+        pass
+
+def start_health_server(port=99):
+    """Start health check server in background thread"""
+    try:
+        server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        print(f'✅ Health check server started on port {port}')
+        print(f'   Access: http://localhost:{port}/health')
+        return server
+    except Exception as e:
+        print(f'❌ Failed to start health server: {e}')
+        return None
+
+# ============================================
+# KONFIGURASI BOT DISCORD
+# ============================================
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents) 
@@ -233,5 +281,13 @@ async def help_command(ctx):
     await ctx.send(embed=embed)
     print(f"{today} [Assistant]: {embed.title}")
 
+# ============================================
+# MAIN - START BOT & HEALTH SERVER
+# ============================================
 if __name__ == "__main__":
+    # Start health check server di port 99
+    health_server = start_health_server(99)
+    
+    # Start Discord bot
+    print('🚀 Starting Discord bot...')
     bot.run(BotDiscord)
