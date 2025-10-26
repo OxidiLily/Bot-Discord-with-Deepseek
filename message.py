@@ -2,7 +2,6 @@ import re
 import asyncio
 import discord
 from date import tanggal
-from cuaca import kode
 def pesan(message):
     msg_content = message.content.lower()
     today = tanggal
