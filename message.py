@@ -2,7 +2,7 @@ import re
 import asyncio
 import discord
 from date import tanggal
-
+from cuaca import kode
 def pesan(message):
     msg_content = message.content.lower()
     today = tanggal
@@ -55,7 +55,13 @@ async def response_message(hasil, ctx):
         Jika belum sesuai, silakan Master {ctx.author.mention} dapat tanyakan ulang dengan pertanyaan yang lebih mendetail yaa...😊🙏""",
         color=discord.Color.purple()
     )
-    
+    bertanya_cuaca = discord.Embed(
+        title=" 🌤️ Informasi Cuaca 🌤️ ",
+        description=f"""
+        Master {ctx.author.mention}, berikut informasi cuaca yang berhasil saya dapatkan.
+        Jika belum sesuai, coba cari dengan nama kelurahan/desa atau bisa kunjungi https://www.bmkg.go.id/cuaca/prakiraan-cuaca yaa...😊🙏""",
+        color=discord.Color.blue()
+    )
     # Cek panjang hasil jawaban, jika lebih dari 2000 karakter, bagi menjadi beberapa pesan
     if len(hasil) > 2000:
             parts = split_message(hasil)
@@ -72,14 +78,22 @@ async def response_message(hasil, ctx):
                         await asyncio.sleep(2) # Simulasi delay mengetik
                         msg = await msg.reply(f'\n{part}' )
             async with ctx.typing():
-                await asyncio.sleep(2) # Simulasi delay mengetik
-                await ctx.channel.send(embed=bertanya_dengan_nada_lembut) 
+                if "cuaca" in hasil.lower():
+                    await asyncio.sleep(2) # Simulasi delay mengetik
+                    await ctx.channel.send(embed=bertanya_cuaca)
+                else:
+                    await asyncio.sleep(2) # Simulasi delay mengetik
+                    await ctx.channel.send(embed=bertanya_dengan_nada_lembut) 
     else:
         await ctx.typing()
         async with ctx.typing():
             await ctx.send(hasil)
-            await asyncio.sleep(2) # Simulasi delay mengetik
-            await ctx.channel.send(embed=bertanya_dengan_nada_lembut)
+            if "cuaca" in hasil.lower():
+                await asyncio.sleep(2) # Simulasi delay mengetik
+                await ctx.channel.send(embed=bertanya_cuaca)
+            else:
+                await asyncio.sleep(2) # Simulasi delay mengetik
+                await ctx.channel.send(embed=bertanya_dengan_nada_lembut) 
     #await asyncio.sleep(2)
     print(f'{today} [Assistant]: {hasil}')
 
